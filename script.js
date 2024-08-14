@@ -591,7 +591,8 @@ selectorFiltro.addEventListener("change", event => {
   let metodoFiltrado = selectorFiltro.value
   
   if(metodoFiltrado==1){
-    dibujarCatalogo(productos)
+    arrayFiltrado=productos
+    dibujarCatalogo(arrayFiltrado)
   }else if(metodoFiltrado==2){
     arrayFiltrado = ordenarCatalogo(productos, 'mayor')
     dibujarCatalogo(arrayFiltrado)
