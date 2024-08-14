@@ -1,0 +1,166 @@
+@import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Staatliches&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Pragati+Narrow:wght@400;700&family=Staatliches&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(213, 169, 255);
+    flex-wrap: wrap;
+  }
+
+h1 {
+    font-family: "Amatic SC", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 70px;
+    color: rgb(19, 30, 90);
+    margin: 20px;
+  }
+
+  .badInput {
+    border-color: red;
+  }
+
+  h6 {
+    color: red;
+    font-size: small;
+    margin-top: 10px;
+  }
+
+  .intro{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+   }
+
+   form {
+    margin: 10px 0
+   }
+
+   main div.row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-areas: 
+    "box1 box2 box3 box4";
+    height: 40vh;
+    width: 95vw;
+    margin: auto;
+  }
+
+  .box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+  }
+
+  .box1 {
+    grid-area: box1;
+  }
+
+  .box2 {
+    grid-area: box2;
+  }
+
+  .box3 {  
+    grid-area: box3;
+  }
+
+  .box4 {
+    grid-area: box4;
+  }
+
+.filtro{
+  background-color: rgb(116, 115, 115);
+}
+
+.contador{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+}
+
+.addProductos{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.espaciadox10{
+  padding: 10px;
+}
+
+.espaciadox5{
+  padding: 0 5px;
+}
+
+.filtro{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.bolsa{
+margin-top: 20px;
+}
+
+.enBolsa{
+  border: 1px solid black;
+  display: flex;
+  width: auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.elemento-bolsa{
+ display: flex;
+ position:relative;
+ width: auto;
+ border: 1px solid black;
+  font-size: 20px;
+  
+}
+
+.total{
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.titulosCarrito{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.subtitulosCarrito{
+  border: 1px solid black;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
