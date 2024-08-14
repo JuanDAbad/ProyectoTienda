@@ -6,7 +6,7 @@ const header = document.querySelector("header")
 const intro = document.querySelector(".intro")
 const footer = document.querySelector("footer")
 const formularioInicial = document.createElement("form")
-const selectorFiltro = document.querySelector(".selectroFiltro")
+const selectorFiltro = document.querySelector(".selectorFiltro")
 let arrayFiltrado = []
 let totalBolsa = 0
 let finalCompra = false;
@@ -46,22 +46,14 @@ function cargarDomUsuario(array){
     intro.appendChild(h2saludo)  
 }
 
+//Clases para los botones de mas y menos que incluyen sus addEventListener asignados al boton al momento de ser creados.
 class BoxesMore {
-  name = "Something Good";
-
   constructor(element,numero) {
-    // bind causes a fixed `this` context to be assigned to `onclick2`
     this.onclick2 = this.onclick2.bind(this);
-    element.addEventListener("click", this.onclick1, false);
-    element.addEventListener("click", this.onclick2, false); // Trick
+    element.addEventListener("click", this.onclick2, false); 
     this.numero = numero;
   }
-  onclick1(event) {
-    console.log(this.name); // undefined, as `this` is the element
-  }
   onclick2(event) {
-    console.log(this.name); // 'Something Good', as `this` is bound to the Something instance
-    
   let numeroProductos1 = document.getElementById(`cantidad${this.numero}`);
   event.preventDefault();
   let currentValue = Number(numeroProductos1.value) || 0;
@@ -70,20 +62,14 @@ class BoxesMore {
 } 
 
 class BoxesLess {
-  name = "Something Good";
+  
   constructor(element,numero) {
-    // bind causes a fixed `this` context to be assigned to `onclick2`
+    
     this.onclick2 = this.onclick2.bind(this);
-    element.addEventListener("click", this.onclick1, false);
-    element.addEventListener("click", this.onclick2, false); // Trick
+    element.addEventListener("click", this.onclick2, false); 
     this.numero = numero;
   }
-  onclick1(event) {
-    console.log(this.name); // undefined, as `this` is the element
-  }
   onclick2(event) {
-    console.log(this.name); // 'Something Good', as `this` is bound to the Something instance
-    
   let numeroProductos1 = document.getElementById(`cantidad${this.numero}`);
   event.preventDefault();
   let currentValue = Number(numeroProductos1.value) || 0;
@@ -234,7 +220,6 @@ const recuperarClientes=()=>{
 const recuperarCarrito=()=>{
     // busco en el storage los datos
     const carritoObtenido = JSON.parse(localStorage.getItem("carrito"))
-    console.log(" Carrito obtenido", carritoObtenido)
     // Si no los encuentro retorno un array vacio
     if(carritoObtenido === null){
         return []
@@ -469,18 +454,8 @@ const dibujarCatalogo=(array)=>{
 let arrayDisminuir = []
 let arrayAumentar = []
 
-//funcion para crear botones. Esto lo hago porque necesito tener todos los botones existentes para crear los eventos, sino genera error.
-const crearBotones = (array)=>{
-  for (let i = 0; i < array.length;i++){
-    const elementoInput = document.createElement("input")
-    const aumentar = document.createElement("input")
-    arrayDisminuir.push(elementoInput)
-    arrayAumentar.push(aumentar)
-  }
-}
-
+//Funcion mostrar la bolsa del carrito
 const dibujarBolsa = () =>{
-
   const seccionBolsa = document.querySelector(".bolsa")
   seccionBolsa.innerHTML=''
 
@@ -488,9 +463,9 @@ const dibujarBolsa = () =>{
     seccionBolsa.innerHTML+=`<div class="titulosCarrito"> <h3 class="tituloCarrito">Carrito</h3>
      <div class="subtitulosCarrito">
       <h3 class="subtituloBolsa">Nombre</h3>
-      <h3 class="subtituloBolsa">Precio Unitario</h3>
+      <h3 class="subtituloBolsa">Precio Unitario (S/.)</h3>
       <h3 class="subtituloBolsa">Cantidad</h3>
-      <h3 class="subtituloBolsa">Subtotal</h3>
+      <h3 class="subtituloBolsa">Subtotal (S/.)</h3>
      </div>
     </div>
     `
@@ -507,39 +482,38 @@ const dibujarBolsa = () =>{
   }
   
   const total=document.querySelector(".totalBolsa")
-  
+  //Esta parte ve si es que hay algun elemento en la bolsa revisando el total consumido
+  //y muestra el boton para finalizar compra, siempre y cuando haya al menos un elemento en la bolsa
   if(totalBolsa!==0){
-    total.innerText=`TOTAL: ${totalBolsa}`
+    total.innerText=`TOTAL: S./${totalBolsa}`
     const botonFinCompra = document.querySelector("#botonFinCompra")
     botonFinCompra.classList.remove("oculto")
-    
   }else{
     total.innerText="No hay elementos en bolsa"
-  }
-  
+  }  
 }
 
+//Creamos los botones de finalizar compra y de nueva compra, pero ocultos
 const finCompra = document.querySelector(".finCompra")
-  finCompra.innerHTML=`<div class="seccionFinCompra">
+finCompra.innerHTML=`<div class="seccionFinCompra">
       <input class="espaciadox10 oculto" type="submit" value="Finalizar Compra" id="botonFinCompra">
       <input class="espaciadox10 oculto" type="submit" value="Volver a comprar" id="nuevaCompra">
       </div>`
 
+//Funcion que toma las cantidades seleccionadas y ejecuta la funcion agregar elementos al carrito
 const cargarCarrito = () =>{
   let arrayCantidades = leerCantidades()
-  console.log(arrayCantidades)
   for(let i = 0; i<arrayFiltrado.length;i++){
   agregarCarrito(arrayFiltrado[i].codigo,arrayCantidades[i],arrayFiltrado)
   }
 }
 
+//Funcion que calcula el total del monto a pagar
 const calcularTotalBolsa = () =>{
-
   totalBolsa = 0;
   for(let i=0;i<carrito.length;i++){
     totalBolsa+=carrito[i].precio*carrito[i].cantidad
   }
-
 }
 
 /* EMPIEZA EL PROCESO */
@@ -547,7 +521,7 @@ const calcularTotalBolsa = () =>{
 clientes = recuperarClientes()//RECUPERAMOS DATOS DE CLIENTES
 carrito = recuperarCarrito()//RECUPERAMOS DATOS DE carrito
 
-calcularTotalBolsa()
+calcularTotalBolsa()//calculamos el monto inicial, que puede ser diferente de cero si se estaba comprando antes.
 
 //Evento de click en boton para agregar elementos al carrito
 const botonAgregarProductos = document.querySelector("#agregar")
@@ -560,17 +534,15 @@ botonAgregarProductos.addEventListener("click", (e)=>{
   }
 )
 
-//Si eres nuevo usuario te manda el formulario, sino, no te manda el formulario
+//Si eres nuevo usuario te manda el formulario, sino, no
 if (clientes.length===0){
   cargarDOMInicial()
 }else{
   cargarDomUsuario(clientes)
 }
 
-//Creamos los botoenes en funcion de la cantidad total de productos
-crearBotones(productos)
 
-//Carga evento de click de submit
+//Carga evento de click de submit para crear nuevo usuario
 formularioInicial.addEventListener("submit", (e)=>{
     // evita el reset
     const submits = []
@@ -588,8 +560,10 @@ formularioInicial.addEventListener("submit", (e)=>{
     } 
 })
 
+//Diagramamos el catalago de productos
 dibujarCatalogo(productos)
 
+//Este es el evento del filtro que te permite seleccionar entre tres tipos de orden
 selectorFiltro.addEventListener("change", event => {
   event.preventDefault();
   let metodoFiltrado = selectorFiltro.value
@@ -606,11 +580,11 @@ selectorFiltro.addEventListener("change", event => {
   }   
 });
 
-dibujarBolsa()
+dibujarBolsa()//Muestra lo que hay en bolsa
 cargarCarrito()
 
+//Evento del boton que finaliza la compra y muestra el carrito y el total 
 const botonFinalCompra = document.querySelector("#botonFinCompra")
-
 botonFinalCompra.addEventListener("click", event => {
 console.log(finalCompra)
 let compraFinalizada = true
@@ -620,6 +594,7 @@ location.reload();
 
 finalCompra = localStorage.getItem("finCompra")
 
+//cambios en la pagina luego de que terminas de comprar
 if(finalCompra=="true"){
   const catalogo = document.querySelector(".catalogo")
   const filtro = document.querySelector(".filtro")
@@ -633,15 +608,15 @@ if(finalCompra=="true"){
   catalogo.innerHTML = ''
   addProductos.innerHTML = ''
   let nombre = clientes[clientes.length-1].nombre.toUpperCase()
-  h2.innerText = `Gracias por tu compra ${nombre}`
+  h2.innerText = `Gracias por tu compra ${nombre} \n La factura ha sido enviada a tu correo`
   tituloCarrito.innerText='Resumen Compra'
   finCompra.classList.toggle("oculto")
   finCompra.classList.toggle("espaciadox10")
   nuevaCompra.classList.toggle("oculto")
 }
 
+//Boton que te permite volver a realizar una compra, resetea el carrito.
 const botonNuevaCompra = document.querySelector("#nuevaCompra")
-
 botonNuevaCompra.addEventListener("click", event => {
   let compraFinalizada = false
   localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
