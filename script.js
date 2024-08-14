@@ -9,6 +9,8 @@ const formularioInicial = document.createElement("form")
 const selectorFiltro = document.querySelector(".selectroFiltro")
 let arrayFiltrado = []
 let totalBolsa = 0
+let finalCompra = false;
+
 //Preset de carga para nuevo usuario
 function cargarDOMInicial(){
   const mensajeAdvertencia = document.createElement("h6")
@@ -508,12 +510,20 @@ const dibujarBolsa = () =>{
   
   if(totalBolsa!==0){
     total.innerText=`TOTAL: ${totalBolsa}`
+    const botonFinCompra = document.querySelector("#botonFinCompra")
+    botonFinCompra.classList.remove("oculto")
+    
   }else{
     total.innerText="No hay elementos en bolsa"
   }
- 
+  
 }
 
+const finCompra = document.querySelector(".finCompra")
+  finCompra.innerHTML=`<div class="seccionFinCompra">
+      <input class="espaciadox10 oculto" type="submit" value="Finalizar Compra" id="botonFinCompra">
+      <input class="espaciadox10 oculto" type="submit" value="Volver a comprar" id="nuevaCompra">
+      </div>`
 
 const cargarCarrito = () =>{
   let arrayCantidades = leerCantidades()
@@ -539,11 +549,8 @@ carrito = recuperarCarrito()//RECUPERAMOS DATOS DE carrito
 
 calcularTotalBolsa()
 
-
-
 //Evento de click en boton para agregar elementos al carrito
 const botonAgregarProductos = document.querySelector("#agregar")
-
 botonAgregarProductos.addEventListener("click", (e)=>{
   e.preventDefault()
   cargarCarrito()
@@ -552,8 +559,6 @@ botonAgregarProductos.addEventListener("click", (e)=>{
   dibujarBolsa()
   }
 )
-
-
 
 //Si eres nuevo usuario te manda el formulario, sino, no te manda el formulario
 if (clientes.length===0){
@@ -585,7 +590,6 @@ formularioInicial.addEventListener("submit", (e)=>{
 
 dibujarCatalogo(productos)
 
-
 selectorFiltro.addEventListener("change", event => {
   event.preventDefault();
   let metodoFiltrado = selectorFiltro.value
@@ -604,3 +608,44 @@ selectorFiltro.addEventListener("change", event => {
 
 dibujarBolsa()
 cargarCarrito()
+
+const botonFinalCompra = document.querySelector("#botonFinCompra")
+
+botonFinalCompra.addEventListener("click", event => {
+console.log(finalCompra)
+let compraFinalizada = true
+localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
+location.reload();
+});
+
+finalCompra = localStorage.getItem("finCompra")
+
+if(finalCompra=="true"){
+  const catalogo = document.querySelector(".catalogo")
+  const filtro = document.querySelector(".filtro")
+  const addProductos = document.querySelector(".addProductos")
+  const h2 = document.querySelector("h2")
+  const tituloCarrito = document.querySelector(".tituloCarrito")
+  const finCompra = document.querySelector("#botonFinCompra")
+  const nuevaCompra = document.querySelector("#nuevaCompra")
+
+  filtro.classList.add("oculto")
+  catalogo.innerHTML = ''
+  addProductos.innerHTML = ''
+  let nombre = clientes[clientes.length-1].nombre.toUpperCase()
+  h2.innerText = `Gracias por tu compra ${nombre}`
+  tituloCarrito.innerText='Resumen Compra'
+  finCompra.classList.toggle("oculto")
+  finCompra.classList.toggle("espaciadox10")
+  nuevaCompra.classList.toggle("oculto")
+}
+
+const botonNuevaCompra = document.querySelector("#nuevaCompra")
+
+botonNuevaCompra.addEventListener("click", event => {
+  let compraFinalizada = false
+  localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
+  carrito=[]
+  localStorage.setItem("carrito", JSON.stringify(carrito))
+  location.reload();
+  });
