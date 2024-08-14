@@ -529,7 +529,6 @@ botonAgregarProductos.addEventListener("click", (e)=>{
   e.preventDefault()
   cargarCarrito()
   calcularTotalBolsa()
-  console.log(carrito)
   dibujarBolsa()
   }
 )
@@ -552,7 +551,6 @@ formularioInicial.addEventListener("submit", (e)=>{
     // usamos el metodo diseñado para la clase de arriba de Object para manejarlo más facil
     const submit = Object.fromEntries(informacion)
     submits.push(submit)
-    console.log(submits)
     const objeto = submits[submits.length-1]
     agregarCliente(objeto.nombre, objeto.apellido, objeto.email)
     if (clienteValido){
@@ -615,7 +613,7 @@ if(finalCompra=="true"){
   nuevaCompra.classList.toggle("oculto")
 }
 
-//Boton que te permite volver a realizar una compra, resetea el carrito.
+//Boton que te permite volver a realizar una compra, resetea el carrito
 const botonNuevaCompra = document.querySelector("#nuevaCompra")
 botonNuevaCompra.addEventListener("click", event => {
   let compraFinalizada = false
