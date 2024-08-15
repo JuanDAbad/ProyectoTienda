@@ -13,6 +13,10 @@
   height: 1px;
 }
 
+#chauCarrito{
+  margin-bottom: 10px;
+}
+
 header {
     display: flex;
     flex-direction: column;

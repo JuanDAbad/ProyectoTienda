@@ -398,7 +398,7 @@ const dibujarCatalogo=(array)=>{
         box.innerHTML+=`<div class="labelProducto">${array[f*4+j].precio} S/.</div>`
         box.innerHTML+=`<div class="contador">
           <input type="submit" value="-" id="menos" class="espaciadox5">
-          <input type="text" name="cantidad" id="cantidad${f*4+j}" placeholder="0">
+          <input type="text" name="cantidad" id="cantidad${f*4+j}" placeholder="0" readonly>
           <input type="submit" value="+" id="mas" class="espaciadox5">
         </div>`
         const menos = document.querySelector(`div.row${f} > div.box${j+1} > .contador > #menos`)
@@ -418,7 +418,7 @@ const dibujarCatalogo=(array)=>{
           box.innerHTML+=`<div class="labelProducto">${array[f*4+j].precio} S/.</div>`
           box.innerHTML+=`<div class="contador">
           <input type="submit" value="-" id="menos" class="espaciadox5">
-          <input type="text" name="cantidad" id="cantidad${f*4+j}" placeholder="0">
+          <input type="text" name="cantidad" id="cantidad${f*4+j}" placeholder="0" readonly>
           <input type="submit" value="+" id="mas" class="espaciadox5">
         </div>`
         const menos = document.querySelector(`div.row${f} > div.box${j+1} > .contador > #menos`)
@@ -435,7 +435,7 @@ const dibujarCatalogo=(array)=>{
         box.innerHTML+=`<div class="labelProducto">${array[f*4+j].precio} S/.</div>`
         box.innerHTML+=`<div class="contador">
           <input type="submit" value="-" id="menos" class="espaciadox5">
-          <input type="text" name="cantidad" id="cantidad${f*4+j}" placeholder="0">
+          <input type="text" name="cantidad" id="cantidad${f*4+j}" placeholder="0" readonly>
           <input type="submit" value="+" id="mas" class="espaciadox5">
         </div>`
       const menos = document.querySelector(`div.row${f} > div.box${j+1} > .contador > #menos`)
@@ -487,12 +487,15 @@ const dibujarBolsa = () =>{
   if(totalBolsa!==0){
     total.innerText=`TOTAL: S./${totalBolsa}`
     const botonFinCompra = document.querySelector("#botonFinCompra")
+    const vaciarCarrito = document.querySelector("#chauCarrito")
     const avisoCliente = document.querySelector(".avisoCliente")
     if(clientes.length===0){
       avisoCliente.innerText = "Por favor registrarse para poder comprar"
     }else{
       avisoCliente.innerText = ''
       botonFinCompra.classList.remove("oculto")
+      vaciarCarrito.classList.remove("oculto")
+
     }
     
   }else{
@@ -504,6 +507,7 @@ const dibujarBolsa = () =>{
 const finCompra = document.querySelector(".finCompra")
 finCompra.innerHTML=`<div class="seccionFinCompra">
       <h3 class="avisoCliente"></h3>
+      <input class="espaciadox10 oculto" type="submit" value="Borrar Carrito" id="chauCarrito">
       <input class="espaciadox10 oculto" type="submit" value="Finalizar Compra" id="botonFinCompra">
       <input class="espaciadox10 oculto" type="submit" value="Volver a comprar" id="nuevaCompra">
       </div>`
@@ -573,6 +577,10 @@ botonAgregarProductos.addEventListener("click", (e)=>{
   cargarCarrito()
   calcularTotalBolsa()
   dibujarBolsa()
+  for (let i = 0; i<arrayFiltrado.length;i++){
+    let resultado = document.querySelector(`#cantidad${i}`)
+    resultado.value = ''
+  }
   }
 )
 
@@ -644,6 +652,7 @@ if(finalCompra=="true"){
   const h2 = document.querySelector("h2")
   const tituloCarrito = document.querySelector(".tituloCarrito")
   const finCompra = document.querySelector("#botonFinCompra")
+  const vaciarCarrito = document.querySelector("#chauCarrito")
   const nuevaCompra = document.querySelector("#nuevaCompra")
 
   filtro.classList.add("oculto")
@@ -654,6 +663,7 @@ if(finalCompra=="true"){
   tituloCarrito.innerText='Resumen Compra'
   finCompra.classList.toggle("oculto")
   finCompra.classList.toggle("espaciadox10")
+  vaciarCarrito.classList.toggle("oculto")
   nuevaCompra.classList.toggle("oculto")
 }
 
@@ -665,4 +675,20 @@ botonNuevaCompra.addEventListener("click", event => {
   carrito=[]
   localStorage.setItem("carrito", JSON.stringify(carrito))
   location.reload();
+  });
+
+
+//Boton para borrar elementos del carrito, por ahora es a todos pero luego hare para cada elemento añadido
+const chauCarrito = document.querySelector("#chauCarrito")
+chauCarrito.addEventListener("click", event => {
+  carrito=[]
+  localStorage.setItem("carrito", JSON.stringify(carrito))
+  event.preventDefault()
+  cargarCarrito()
+  calcularTotalBolsa()
+  dibujarBolsa()
+  for (let i = 0; i<arrayFiltrado.length;i++){
+    let resultado = document.querySelector(`#cantidad${i}`)
+    resultado.value = ''
+  }
   });
