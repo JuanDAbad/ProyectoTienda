@@ -524,6 +524,7 @@ const calcularTotalBolsa = () =>{
   }
 }
 
+//Selector de botones agregado
 const radioTodos = document.querySelector("#todo")
 const radioPrint = document.querySelector("#print")
 const radioSticker = document.querySelector("#sticker")
@@ -608,7 +609,7 @@ dibujarCatalogo(productos)
 selectorFiltro.addEventListener("change", event => {
   event.preventDefault();
   let metodoFiltrado = selectorFiltro.value
-  
+  radioTodos.checked = true
   if(metodoFiltrado==1){
     arrayFiltrado=productos
     dibujarCatalogo(arrayFiltrado)
