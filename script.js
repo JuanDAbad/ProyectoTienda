@@ -113,16 +113,17 @@ const agregarProducto = function (nombre, clase, precio, size, codigo) {
   productos.push(producto);
 };
 
-agregarProducto("Print 1", "Print A5", 15.0, "14.8x21", 1);
-agregarProducto("Print 2", "Print A4", 30.0, "21x29.7", 2);
-agregarProducto("Print 3", "Print A3", 50.0, "29.7x42", 3);
-agregarProducto("Pack Sticker 1", "Pack Stickers x5", 5.0, "5x5", 4);
-agregarProducto("Pack Sticker 2", "Pack Stickers x10", 10.0, "5x5", 5);
-agregarProducto("Taza 1", "Accesorio", 15.0, "", 6);
-agregarProducto("Tote Bag 1", "Accesorio", 50.0, "10x20", 7);
-agregarProducto("Gorra 1", "Accesorio", 30.0, "5x5", 8);
+//Catalogo de productos
+agregarProducto("Print A5", "Print", 15.0, "14.8x21", 1);
+agregarProducto("Print A4", "Print", 30.0, "21x29.7", 2);
+agregarProducto("Print A3", "Print", 50.0, "29.7x42", 3);
+agregarProducto("Pack Sticker x5", "Pack Stickers", 5.0, "5x5", 4);
+agregarProducto("Pack Sticker x10", "Pack Stickers", 10.0, "5x5", 5);
+agregarProducto("Taza", "Accesorio", 15.0, "", 6);
+agregarProducto("Tote Bag", "Accesorio", 50.0, "10x20", 7);
+agregarProducto("Gorra", "Accesorio", 30.0, "5x5", 8);
 
-arrayFiltrado=productos
+arrayFiltrado=productos//esto es para que el filtrado funcione correctamente
 
 //funcion validar si un string tiene numeros
 const validarString = (nombre) => {
@@ -522,6 +523,40 @@ const calcularTotalBolsa = () =>{
     totalBolsa+=carrito[i].precio*carrito[i].cantidad
   }
 }
+
+const radioTodos = document.querySelector("#todo")
+const radioPrint = document.querySelector("#print")
+const radioSticker = document.querySelector("#sticker")
+const radioAccesorio= document.querySelector("#accesorio")
+
+radioPrint.addEventListener("change", (e)=>{
+  let arrayNuevo = buscarxClase("print",productos)
+  arrayFiltrado=arrayNuevo
+  console.log(arrayNuevo)
+  dibujarCatalogo(arrayFiltrado)
+  })
+
+radioSticker.addEventListener("change", (e)=>{
+  let arrayNuevo = buscarxClase("Sticker",productos)
+  console.log(arrayNuevo)
+  arrayFiltrado=arrayNuevo
+  dibujarCatalogo(arrayFiltrado)
+  })
+
+radioTodos.addEventListener("change", (e)=>{
+  let arrayNuevo = productos
+  console.log(arrayNuevo)
+  arrayFiltrado=arrayNuevo
+  dibujarCatalogo(arrayFiltrado)
+  })
+
+radioAccesorio.addEventListener("change", (e)=>{
+  let arrayNuevo = buscarxClase("Accesorio",productos)
+  console.log(arrayNuevo)
+  arrayFiltrado=arrayNuevo
+  dibujarCatalogo(arrayFiltrado)
+  })
+
 
 /* EMPIEZA EL PROCESO */
 

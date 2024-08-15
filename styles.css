@@ -88,10 +88,6 @@ h1 {
     grid-area: box4;
   }
 
-.filtro{
-  background-color: rgb(116, 115, 115);
-}
-
 .contador{
   display: flex;
   flex-direction: row;
@@ -118,7 +114,7 @@ h1 {
 
 .filtro{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   margin: 20px 0;
