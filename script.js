@@ -233,14 +233,15 @@ const recuperarCarrito=()=>{
     }
 }
 
-//funcion para filtrar productos mayores a cierto precio
+//funcion para filtrar productos mayores a cierto precio, no llegue a implementarlo
 const filtrarPrecioMayor = (monto) => {
   const filtrado = productos.filter((producto) => {
     return producto.precio >= monto;
   });
 
   if (filtrado.length === 0) {
-    alert(`No hay productos mayores a ${monto} soles`);
+    const h3 = document.createElement("h3")
+    h3.innerText = `No existe productos mayores a ese monto`
   }else{
     return filtrado
   }
@@ -253,7 +254,8 @@ const filtrarPrecioMenor = (monto) => {
   });
 
   if (filtrado.length === 0) {
-    alert(`No hay productos menores a ${monto} soles`);
+    const h3 = document.createElement("h3")
+    h3.innerText = `No existe productos menores a ese monto`
   }else{
     return filtrado
   }
@@ -269,9 +271,9 @@ const buscarxNombre = (palabra, catalogo) => {
     return buscarPalabra(producto.nombre, palabra);
   });
   if (productoEle === undefined) {
-    console.log("cero resultados");
+    const h3 = document.createElement("h3")
+    h3.innerText = `No existen coincidencias`
   } else {
-    /* alert(`el combo encontrado es: ${comboEle.nombre}`) */
     return productoEle;
   }
 };
@@ -282,13 +284,12 @@ const buscarxClase = (clase, catalogo) => {
   const productoEle = catalogo.filter((producto) => {
     return buscarPalabra(producto.clase, clase);
   });
-  console.log(productoEle);
-
+  
   if (productoEle === undefined) {
-    console.log("cero resultados");
+    const h3 = document.createElement("h3")
+    h3.innerText = `No existen coincidencias`
   } else {
-    /* alert(`el combo encontrado es: ${comboEle.nombre}`) */
-    console.log(`el precio es ${productoEle.precio}`);
+    return productoEle
   }
 };
 
@@ -304,7 +305,7 @@ const agregarCarrito = (codigo, cantidad, catalogo) => {
     carrito.push(eleCarrito);
     localStorage.setItem("carrito", JSON.stringify(carrito))
   } else {
-    console.log(`No contamos con stock de del producto`);
+    
   }}
 };
 
@@ -319,9 +320,7 @@ const quitarElemento = (codigo, catalogo) => {
 
     catalogo.splice(posicion, 1);
     localStorage.setItem("carrito", JSON.stringify(catalogo))
-    console.table(catalogo);
-  } else {
-    console.log("no se encontro producto");
+    
   }
 };
 
@@ -487,7 +486,14 @@ const dibujarBolsa = () =>{
   if(totalBolsa!==0){
     total.innerText=`TOTAL: S./${totalBolsa}`
     const botonFinCompra = document.querySelector("#botonFinCompra")
-    botonFinCompra.classList.remove("oculto")
+    const avisoCliente = document.querySelector(".avisoCliente")
+    if(clientes.length===0){
+      avisoCliente.innerText = "Por favor registrarse para poder comprar"
+    }else{
+      avisoCliente.innerText = ''
+      botonFinCompra.classList.remove("oculto")
+    }
+    
   }else{
     total.innerText="No hay elementos en bolsa"
   }  
@@ -496,6 +502,7 @@ const dibujarBolsa = () =>{
 //Creamos los botones de finalizar compra y de nueva compra, pero ocultos
 const finCompra = document.querySelector(".finCompra")
 finCompra.innerHTML=`<div class="seccionFinCompra">
+      <h3 class="avisoCliente"></h3>
       <input class="espaciadox10 oculto" type="submit" value="Finalizar Compra" id="botonFinCompra">
       <input class="espaciadox10 oculto" type="submit" value="Volver a comprar" id="nuevaCompra">
       </div>`
@@ -555,6 +562,7 @@ formularioInicial.addEventListener("submit", (e)=>{
     agregarCliente(objeto.nombre, objeto.apellido, objeto.email)
     if (clienteValido){
       cargarDomUsuario(submits)
+      location.reload()
     } 
 })
 
@@ -584,7 +592,7 @@ cargarCarrito()
 //Evento del boton que finaliza la compra y muestra el carrito y el total 
 const botonFinalCompra = document.querySelector("#botonFinCompra")
 botonFinalCompra.addEventListener("click", event => {
-console.log(finalCompra)
+
 let compraFinalizada = true
 localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
 location.reload();
