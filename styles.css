@@ -13,6 +13,13 @@
   height: 1px;
 }
 
+.logingOut{
+ display: flex;
+ align-items: center;
+ margin-right: 10px;
+ justify-content: right;
+}
+
 #chauCarrito{
   margin-bottom: 10px;
 }
@@ -174,4 +181,8 @@ font-size: 20px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.avisoCliente{
+  color: red;
 }

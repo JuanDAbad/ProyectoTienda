@@ -1,0 +1,59 @@
+[
+    {
+        "nombre":"Print A5",
+        "clase":"Print",
+        "precio":15.0,
+        "size":"14.8x21",
+        "codigo":1
+        
+    },
+    {
+        "nombre":"Print A4",
+        "clase":"Print",
+        "precio":30.0,
+        "size":"21x29.7",
+        "codigo":2
+    },
+    {
+        "nombre":"Print A3",
+        "clase":"Print",
+        "precio":50.0,
+        "size":"29.7x42",
+        "codigo":3
+    },
+    {
+        "nombre":"Pack Sticker x5",
+        "clase":"Pack Stickers",
+        "precio":5.0,
+        "size":"14.8x21",
+        "codigo":4
+    },
+    {
+        "nombre":"Pack Sticker x10",
+        "clase":"Pack Stickers",
+        "precio":10.0,
+        "size":"14.8x21",
+        "codigo":5
+    },
+    {
+        "nombre":"Taza",
+        "clase":"Accesorio",
+        "precio":15.0,
+        "size":"14.8x21",
+        "codigo":6
+    },
+    {
+        "nombre":"Tote Bag",
+        "clase":"Accesorio",
+        "precio":50.0,
+        "size":"14.8x21",
+        "codigo":7
+    },
+    {
+        "nombre":"Gorra",
+        "clase":"Accesorio",
+        "precio":30.0,
+        "size":"14.8x21",
+        "codigo":8
+    }
+]

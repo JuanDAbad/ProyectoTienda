@@ -10,18 +10,34 @@ const selectorFiltro = document.querySelector(".selectorFiltro")
 let arrayFiltrado = []
 let totalBolsa = 0
 let finalCompra = false;
+let sesionActiva = false;
+let clienteActivo = []
+
+let comprobarPrimerUso = () =>{
+
+  if(clientes.length===0){
+    sesionActiva=false;
+    localStorage.setItem("sesionActiva", JSON.stringify(sesionActiva))
+  }else{
+    sesionActiva = JSON.parse(localStorage.getItem("sesionActiva"))
+  }
+}
 
 //Preset de carga para nuevo usuario
 function cargarDOMInicial(){
   const mensajeAdvertencia = document.createElement("h6")
+  const botonLogOut = document.querySelector("#logOut")
+  botonLogOut.classList.add("oculto")
   const h2saludo = document.createElement("h2")
-    h2saludo.innerText = 'Bienvenido'
-    const h3saludo = document.createElement("h3")
-    h3saludo.innerText = 'Registrate!'
-    intro.appendChild(h2saludo)
-    intro.appendChild(h3saludo)
-    intro.appendChild(formularioInicial)
-    formularioInicial.innerHTML += 
+  h2saludo.innerText = 'Bienvenido'
+  formularioInicial.innerHTML=""
+  const h3saludo = document.createElement("h3")
+  h3saludo.innerText = 'Registrate!'
+  intro.innerHTML=""
+  intro.appendChild(h2saludo)
+  intro.appendChild(h3saludo)
+  intro.appendChild(formularioInicial)
+  formularioInicial.innerHTML += 
 
 `<label for="nombre">Nombres</label>
 <input type="text" name="nombre" id="nombre" placeholder="Nombres">
@@ -36,14 +52,18 @@ function cargarDOMInicial(){
 intro.appendChild(mensajeAdvertencia)
   }
 
+
+
 //Preset de carga para usuario anteriormente registrado o con sesión iniciada en ese dispositivo (verifica localstorage por el array clientes)
 function cargarDomUsuario(array){
     const h2saludo = document.createElement("h2")
     const ultimoUsuario = array[array.length - 1]
+    const botonLogOut = document.querySelector("#logOut")
     let nombre = ultimoUsuario.nombre.toUpperCase()
     h2saludo.innerText = `HOLA ${nombre} `
     intro.innerHTML = ''
     intro.appendChild(h2saludo)  
+    botonLogOut.classList.remove("oculto")
 }
 
 //Clases para los botones de mas y menos que incluyen sus addEventListener asignados al boton al momento de ser creados.
@@ -54,15 +74,14 @@ class BoxesMore {
     this.numero = numero;
   }
   onclick2(event) {
-  let numeroProductos1 = document.getElementById(`cantidad${this.numero}`);
+  let numeroProductos = document.getElementById(`cantidad${this.numero}`);
   event.preventDefault();
-  let currentValue = Number(numeroProductos1.value) || 0;
-  numeroProductos1.value = currentValue + 1;
+  let currentValue = Number(numeroProductos.value) || 0;
+  numeroProductos.value = currentValue + 1;
   }
 } 
 
-class BoxesLess {
-  
+class BoxesLess { 
   constructor(element,numero) {
     
     this.onclick2 = this.onclick2.bind(this);
@@ -70,12 +89,12 @@ class BoxesLess {
     this.numero = numero;
   }
   onclick2(event) {
-  let numeroProductos1 = document.getElementById(`cantidad${this.numero}`);
+  let numeroProductos = document.getElementById(`cantidad${this.numero}`);
   event.preventDefault();
-  let currentValue = Number(numeroProductos1.value) || 0;
-  numeroProductos1.value = currentValue - 1;
-  if(numeroProductos1.value<=0){
-    numeroProductos1.value = ''
+  let currentValue = Number(numeroProductos.value) || 0;
+  numeroProductos.value = currentValue - 1;
+  if(numeroProductos.value<=0){
+    numeroProductos.value = ''
   }
 } }
 
@@ -98,7 +117,7 @@ class Cliente {
   }
 }
 
-class elementoCarrito {
+class ElementoCarrito {
   constructor(codigo, nombre, precio, cantidad) {
     this.codigo = codigo;
     this.nombre = nombre;
@@ -107,23 +126,49 @@ class elementoCarrito {
   }
 }
 
+
 //Funcion para agregar producto al catalogo
-const agregarProducto = function (nombre, clase, precio, size, codigo) {
-  const producto = new Producto(nombre, clase, precio, size, codigo);
+const agregarProducto = function (obj) {
+  const producto = new Producto(obj.nombre, obj.clase, obj.precio, obj.size, obj.codigo);
   productos.push(producto);
 };
 
-//Catalogo de productos
-agregarProducto("Print A5", "Print", 15.0, "14.8x21", 1);
-agregarProducto("Print A4", "Print", 30.0, "21x29.7", 2);
-agregarProducto("Print A3", "Print", 50.0, "29.7x42", 3);
-agregarProducto("Pack Sticker x5", "Pack Stickers", 5.0, "5x5", 4);
-agregarProducto("Pack Sticker x10", "Pack Stickers", 10.0, "5x5", 5);
-agregarProducto("Taza", "Accesorio", 15.0, "", 6);
-agregarProducto("Tote Bag", "Accesorio", 50.0, "10x20", 7);
-agregarProducto("Gorra", "Accesorio", 30.0, "5x5", 8);
 
-arrayFiltrado=productos//esto es para que el filtrado funcione correctamente
+//FUNCION FETCH
+const productosPreexistentes = async ()=>{
+  // Si el array de productos esta vacio, hace un fetch de los productos
+  if (productos.length===0){
+      try{
+          // console.log("PROMESA")
+          // es buena pracitca poner aparte el link con el que trabajas, hay mejor manejo.
+          const URLprodRelativoRaiz = "/Proyecto/baseDatos.json" // Mejor si hay varios HTML en distintos lados aunque si no hay compilación, puede hacer lío al hostear
+          const URLprodRelativoPosicion = "./baseDatos.json" // Marea porque es en relacion al HTML!!!
+          const productosBasePuro = await fetch(URLprodRelativoPosicion)
+          const productosBase = await productosBasePuro.json()
+          productosBase.forEach(prod=>{
+              agregarProducto(prod) }
+              )
+      } catch(err) {
+          console.error("Se produjo un error al realizar el fetch:", err)
+      }finally{
+          console.log("todo bien");
+          arrayFiltrado=productos
+          console.table(productos)
+
+          const finalCompra = localStorage.getItem("finCompra")
+
+          if (finalCompra==="true"){
+            const catalogo = document.querySelector(".catalogo")
+            catalogo.innerHTML=""
+          }else{
+            dibujarCatalogo(arrayFiltrado)
+          }
+      }
+  } else {
+      console.log("ya habia productos");
+  }
+}
+ 
 
 //funcion validar si un string tiene numeros
 const validarString = (nombre) => {
@@ -137,6 +182,15 @@ const validarString = (nombre) => {
   return contieneNum;
 };
 
+//funcion para ver si ya hay alguien registrado con ese correo
+const flitrarCorreo = (correo) => {
+  let correoMin = correo.toLowerCase()
+  const filtrado = clientes.filter((cliente) => {
+    return cliente.email.toLowerCase() === correoMin;
+  })
+  return filtrado
+}
+
 //funcion para agregar clientes
 const agregarCliente = function (nombre, apellido, email) {
   const nombreJunto = nombre.replace(/\s/g, "");
@@ -144,7 +198,7 @@ const agregarCliente = function (nombre, apellido, email) {
   const emailJunto = email.replace(/\s/g, "");
 
   if (nombreJunto !== "" && apellidoJunto !== "" && emailJunto !== "") {
-    if (validarString(nombreJunto)) {
+    if (validarString(nombreJunto)) { //Se corrobora que sea un nombre valido,si tiene numeros te sale un aviso y el dato resaltado en rojo (la caja de ingreso de texto)
       const inputNombre = document.querySelector("#nombre")
       inputNombre.className = "badInput"
     }else{
@@ -153,7 +207,7 @@ const agregarCliente = function (nombre, apellido, email) {
     }
 
     if (validarString(apellidoJunto)) {
-      const inputApellido = document.querySelector("#apellido")
+      const inputApellido = document.querySelector("#apellido")//misma logica de validacion que la del nombre
       inputApellido.className = "badInput"
     }else{
       const inputApellido = document.querySelector("#apellido")
@@ -164,10 +218,27 @@ const agregarCliente = function (nombre, apellido, email) {
     input.className = ""
 
     if (!validarString(nombreJunto) &&!validarString(apellidoJunto)) {
+      let clienteExistente = flitrarCorreo(email)
+      clienteActivo = []
+      if (clienteExistente.length === 0){
       const cliente = new Cliente(nombre, apellido, email)
       clientes.push(cliente)
       clienteValido = true
+      sesionActiva = true;
+      localStorage.setItem("sesionActiva", JSON.stringify(sesionActiva))
       localStorage.setItem("clientes", JSON.stringify(clientes))
+      clienteActivo.push(cliente)
+      localStorage.setItem("clienteActivo", JSON.stringify(clienteActivo))
+      }
+      else{
+        console.log("cliente existe")
+        clienteActivo = clienteExistente;
+        sesionActiva = true;
+        localStorage.setItem("sesionActiva", JSON.stringify(sesionActiva))
+        localStorage.setItem("clienteActivo", JSON.stringify(clienteActivo))
+        cargarDomUsuario(clienteActivo)
+      }
+   
     }else{
       const mensajeAdvertencia = document.querySelector("h6")
       mensajeAdvertencia.innerText = "Uno o mas campos estan incorrectos"
@@ -217,6 +288,17 @@ const recuperarClientes=()=>{
     }
 }
 
+const recuperarClienteActivo=()=>{
+  const nuevoClienteActivo = JSON.parse(localStorage.getItem("clienteActivo"))
+
+  if(nuevoClienteActivo === null){
+    return []
+} else {
+    //Si los encuentro, los paso por la clase asi le agrego los metodos
+    return nuevoClienteActivo
+}
+}
+
 //funcion para cargar el carrito previo
 const recuperarCarrito=()=>{
     // busco en el storage los datos
@@ -228,7 +310,7 @@ const recuperarCarrito=()=>{
         //Si los encuentro, los paso por la clase asi le agrego los metodos
         const nuevoCarrito = []
         for(let i=0; i<carritoObtenido.length; i++){
-            nuevoCarrito.push(new elementoCarrito(carritoObtenido[i].codigo, carritoObtenido[i].nombre, carritoObtenido[i].precio, carritoObtenido[i].cantidad))
+            nuevoCarrito.push(new ElementoCarrito(carritoObtenido[i].codigo, carritoObtenido[i].nombre, carritoObtenido[i].precio, carritoObtenido[i].cantidad))
         }
         return nuevoCarrito
     }
@@ -302,7 +384,7 @@ const agregarCarrito = (codigo, cantidad, catalogo) => {
 
   if(cantidad!==''){ 
   if (productoEncontrado) {
-    const eleCarrito = new elementoCarrito(productoEncontrado.codigo,productoEncontrado.nombre,productoEncontrado.precio,cantidad);
+    const eleCarrito = new ElementoCarrito(productoEncontrado.codigo,productoEncontrado.nombre,productoEncontrado.precio,cantidad);
     carrito.push(eleCarrito);
     localStorage.setItem("carrito", JSON.stringify(carrito))
   } else {
@@ -368,6 +450,10 @@ const ordenarCatalogo = (catalogo, orden) => {
   
 
 //funcion para mostrar los productos del catalogo
+
+let arrayDisminuir = []
+let arrayAumentar = []
+
 const dibujarCatalogo=(array)=>{
   const catalogo = document.querySelector(".catalogo")
   let exacto = 0
@@ -451,8 +537,6 @@ const dibujarCatalogo=(array)=>{
 }
 //fin de funcion de creacion visual del catalogo
 
-let arrayDisminuir = []
-let arrayAumentar = []
 
 //Funcion mostrar la bolsa del carrito
 const dibujarBolsa = () =>{
@@ -471,35 +555,40 @@ const dibujarBolsa = () =>{
     `
   }
 
-  for(let i = 0; i<carrito.length;i++){
-    let precioElementos = carrito[i].precio*carrito[i].cantidad
+  let i = 0
+  carrito.forEach(item => {
+    let precioElementos = item.precio*item.cantidad
     seccionBolsa.innerHTML+=` <div class="enBolsa" id="enBolsa${i}">
-        <h3 class="elemento-bolsa">${carrito[i].nombre}</h3>
-        <h3 class="elemento-bolsa">${carrito[i].precio}</h3>
-        <h3 class="elemento-bolsa">${carrito[i].cantidad}</h3>
+        <h3 class="elemento-bolsa">${item.nombre}</h3>
+        <h3 class="elemento-bolsa">${item.precio}</h3>
+        <h3 class="elemento-bolsa">${item.cantidad}</h3>
         <h3 class="elemento-bolsa">${precioElementos}</h3>
       </div>`
-  }
-  
+      i++
+  });
+
   const total=document.querySelector(".totalBolsa")
   //Esta parte ve si es que hay algun elemento en la bolsa revisando el total consumido
-  //y muestra el boton para finalizar compra, siempre y cuando haya al menos un elemento en la bolsa
+  //y muestra el boton para finalizar compra, siempre y cuando haya al menos un elemento en la bolsa y el usuario se haya registrado
   if(totalBolsa!==0){
     total.innerText=`TOTAL: S./${totalBolsa}`
     const botonFinCompra = document.querySelector("#botonFinCompra")
     const vaciarCarrito = document.querySelector("#chauCarrito")
     const avisoCliente = document.querySelector(".avisoCliente")
-    if(clientes.length===0){
-      avisoCliente.innerText = "Por favor registrarse para poder comprar"
+    if(clienteActivo.length===0){
+      avisoCliente.innerText = "Por favor registrarse para poder comprar o modificar bolsa"
     }else{
       avisoCliente.innerText = ''
       botonFinCompra.classList.remove("oculto")
       vaciarCarrito.classList.remove("oculto")
-
     }
     
   }else{
     total.innerText="No hay elementos en bolsa"
+    const botonFinCompra = document.querySelector("#botonFinCompra")
+    const vaciarCarrito = document.querySelector("#chauCarrito")
+    botonFinCompra.classList.add("oculto")
+      vaciarCarrito.classList.add("oculto")
   }  
 }
 
@@ -562,14 +651,6 @@ radioAccesorio.addEventListener("change", (e)=>{
   dibujarCatalogo(arrayFiltrado)
   })
 
-
-/* EMPIEZA EL PROCESO */
-
-clientes = recuperarClientes()//RECUPERAMOS DATOS DE CLIENTES
-carrito = recuperarCarrito()//RECUPERAMOS DATOS DE carrito
-
-calcularTotalBolsa()//calculamos el monto inicial, que puede ser diferente de cero si se estaba comprando antes.
-
 //Evento de click en boton para agregar elementos al carrito
 const botonAgregarProductos = document.querySelector("#agregar")
 botonAgregarProductos.addEventListener("click", (e)=>{
@@ -584,13 +665,66 @@ botonAgregarProductos.addEventListener("click", (e)=>{
   }
 )
 
-//Si eres nuevo usuario te manda el formulario, sino, no
-if (clientes.length===0){
-  cargarDOMInicial()
-}else{
-  cargarDomUsuario(clientes)
+//Funcion para cargar el dom de compra finalizada
+const domFinalCompra = ()=>{
+finalCompra = localStorage.getItem("finCompra")
+
+//cambios en la pagina luego de que terminas de comprar
+if(finalCompra=="true"){
+  const catalogo = document.querySelector(".catalogo")
+  const filtro = document.querySelector(".filtro")
+  const addProductos = document.querySelector(".addProductos")
+  const h2 = document.querySelector("h2")
+  const botonLogOut = document.querySelector("#logOut")
+  const tituloCarrito = document.querySelector(".tituloCarrito")
+  const finCompra = document.querySelector("#botonFinCompra")
+  const vaciarCarrito = document.querySelector("#chauCarrito")
+  const nuevaCompra = document.querySelector("#nuevaCompra")
+
+  filtro.classList.add("oculto")
+  catalogo.innerHTML = ''
+  addProductos.innerHTML = ''
+  let cliente = clienteActivo[0]
+  h2.innerText = `Gracias por tu compra ${cliente.nombre.toUpperCase()} \n La factura ha sido enviada a ${cliente.email}`
+  tituloCarrito.innerText='Resumen Compra'
+  finCompra.classList.toggle("oculto")
+  botonLogOut.classList.toggle("oculto")
+  finCompra.classList.toggle("espaciadox10")
+  vaciarCarrito.classList.toggle("oculto")
+  nuevaCompra.classList.toggle("oculto")
+}
 }
 
+/* EMPIEZA EL PROCESO */
+productosPreexistentes()
+clientes = recuperarClientes()//RECUPERAMOS DATOS DE CLIENTES
+carrito = recuperarCarrito()//RECUPERAMOS DATOS DE carrito
+clienteActivo=recuperarClienteActivo()
+console.log(clienteActivo);
+
+comprobarPrimerUso()
+calcularTotalBolsa()//calculamos el monto inicial, que puede ser diferente de cero si se estaba comprando antes.
+
+
+//Si eres nuevo usuario te manda el formulario, sino, no
+if (sesionActiva===false){
+  cargarDOMInicial()
+}else{
+  cargarDomUsuario(clienteActivo)
+}
+
+//Diagramamos el catalago de productos
+dibujarCatalogo(productos)
+
+dibujarBolsa()//Muestra lo que hay en bolsa
+cargarCarrito()
+domFinalCompra()
+
+/* FIN PROCESO */
+
+
+
+//Zona de eventos: Esta despues porque algunos requieren que sea cargado o creado elementos del Dom para funcionar
 
 //Carga evento de click de submit para crear nuevo usuario
 formularioInicial.addEventListener("submit", (e)=>{
@@ -604,14 +738,12 @@ formularioInicial.addEventListener("submit", (e)=>{
     submits.push(submit)
     const objeto = submits[submits.length-1]
     agregarCliente(objeto.nombre, objeto.apellido, objeto.email)
-    if (clienteValido){
+    if (clienteActivo.length!==0){
       cargarDomUsuario(submits)
       location.reload()
     } 
+   
 })
-
-//Diagramamos el catalago de productos
-dibujarCatalogo(productos)
 
 //Este es el evento del filtro que te permite seleccionar entre tres tipos de orden
 selectorFiltro.addEventListener("change", event => {
@@ -630,8 +762,6 @@ selectorFiltro.addEventListener("change", event => {
   }   
 });
 
-dibujarBolsa()//Muestra lo que hay en bolsa
-cargarCarrito()
 
 //Evento del boton que finaliza la compra y muestra el carrito y el total 
 const botonFinalCompra = document.querySelector("#botonFinCompra")
@@ -639,33 +769,10 @@ botonFinalCompra.addEventListener("click", event => {
 
 let compraFinalizada = true
 localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
+domFinalCompra()
 location.reload();
 });
 
-finalCompra = localStorage.getItem("finCompra")
-
-//cambios en la pagina luego de que terminas de comprar
-if(finalCompra=="true"){
-  const catalogo = document.querySelector(".catalogo")
-  const filtro = document.querySelector(".filtro")
-  const addProductos = document.querySelector(".addProductos")
-  const h2 = document.querySelector("h2")
-  const tituloCarrito = document.querySelector(".tituloCarrito")
-  const finCompra = document.querySelector("#botonFinCompra")
-  const vaciarCarrito = document.querySelector("#chauCarrito")
-  const nuevaCompra = document.querySelector("#nuevaCompra")
-
-  filtro.classList.add("oculto")
-  catalogo.innerHTML = ''
-  addProductos.innerHTML = ''
-  let nombre = clientes[clientes.length-1].nombre.toUpperCase()
-  h2.innerText = `Gracias por tu compra ${nombre} \n La factura ha sido enviada a tu correo`
-  tituloCarrito.innerText='Resumen Compra'
-  finCompra.classList.toggle("oculto")
-  finCompra.classList.toggle("espaciadox10")
-  vaciarCarrito.classList.toggle("oculto")
-  nuevaCompra.classList.toggle("oculto")
-}
 
 //Boton que te permite volver a realizar una compra, resetea el carrito
 const botonNuevaCompra = document.querySelector("#nuevaCompra")
@@ -678,17 +785,38 @@ botonNuevaCompra.addEventListener("click", event => {
   });
 
 
-//Boton para borrar elementos del carrito, por ahora es a todos pero luego hare para cada elemento añadido
+//Boton para borrar elementos del carrito
 const chauCarrito = document.querySelector("#chauCarrito")
 chauCarrito.addEventListener("click", event => {
   carrito=[]
   localStorage.setItem("carrito", JSON.stringify(carrito))
   event.preventDefault()
-  cargarCarrito()
-  calcularTotalBolsa()
-  dibujarBolsa()
   for (let i = 0; i<arrayFiltrado.length;i++){
     let resultado = document.querySelector(`#cantidad${i}`)
     resultado.value = ''
   }
+  cargarCarrito()
+  calcularTotalBolsa()
+  dibujarBolsa()
+  });
+
+  //Boton para hacer log out 
+const logOut = document.querySelector("#logOut")
+logOut.addEventListener("click", event => {
+  event.preventDefault()
+  carrito=[]
+  sesionActiva=false;
+  clienteActivo=[]
+  localStorage.setItem("sesionActiva", JSON.stringify(sesionActiva))
+  localStorage.setItem("clienteActivo", JSON.stringify(clienteActivo))
+  localStorage.setItem("carrito", JSON.stringify(carrito))
+  for (let i = 0; i<arrayFiltrado.length;i++){
+    let resultado = document.querySelector(`#cantidad${i}`)
+    resultado.value = ''
+  }
+  cargarDOMInicial()
+  cargarCarrito()
+  calcularTotalBolsa()
+  dibujarBolsa()
+ 
   });
