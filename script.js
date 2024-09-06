@@ -12,6 +12,33 @@ let totalBolsa = 0
 let finalCompra = false;
 let sesionActiva = false;
 let clienteActivo = []
+const DateTime = luxon.DateTime;
+const now = DateTime.now();
+
+const agregarCero = (number) =>{
+    if(number<10){
+        let numeroString = `0${number}`
+        return numeroString;
+    }else{
+        return number;
+    }
+}
+
+const obtenerDate = () =>{
+    let fecha = []
+    let day = agregarCero(now.day)
+    let year = agregarCero(now.year)
+    let month = agregarCero(now.month)
+    let hour = agregarCero(now.hour)
+    let min = agregarCero(now.minute)
+
+    let fechaDia = `${day}/${month}/${year}`
+    let fechaHora = `${hour}:${min}`
+    fecha.push(fechaDia)
+    fecha.push(fechaHora)
+    return fecha;
+}
+
 
 let comprobarPrimerUso = () =>{
 
@@ -139,10 +166,9 @@ const productosPreexistentes = async ()=>{
   // Si el array de productos esta vacio, hace un fetch de los productos
   if (productos.length===0){
       try{
-          // console.log("PROMESA")
-          // es buena pracitca poner aparte el link con el que trabajas, hay mejor manejo.
-          const URLprodRelativoRaiz = "/Proyecto/baseDatos.json" // Mejor si hay varios HTML en distintos lados aunque si no hay compilación, puede hacer lío al hostear
-          const URLprodRelativoPosicion = "./baseDatos.json" // Marea porque es en relacion al HTML!!!
+
+          const URLprodRelativoRaiz = "/Proyecto/baseDatos.json" 
+          const URLprodRelativoPosicion = "./baseDatos.json" 
           const productosBasePuro = await fetch(URLprodRelativoPosicion)
           const productosBase = await productosBasePuro.json()
           productosBase.forEach(prod=>{
@@ -151,10 +177,7 @@ const productosPreexistentes = async ()=>{
       } catch(err) {
           console.error("Se produjo un error al realizar el fetch:", err)
       }finally{
-          console.log("todo bien");
           arrayFiltrado=productos
-          console.table(productos)
-
           const finalCompra = localStorage.getItem("finCompra")
 
           if (finalCompra==="true"){
@@ -165,7 +188,7 @@ const productosPreexistentes = async ()=>{
           }
       }
   } else {
-      console.log("ya habia productos");
+    dibujarCatalogo(arrayFiltrado)
   }
 }
  
@@ -231,7 +254,6 @@ const agregarCliente = function (nombre, apellido, email) {
       localStorage.setItem("clienteActivo", JSON.stringify(clienteActivo))
       }
       else{
-        console.log("cliente existe")
         clienteActivo = clienteExistente;
         sesionActiva = true;
         localStorage.setItem("sesionActiva", JSON.stringify(sesionActiva))
@@ -274,7 +296,7 @@ const agregarCliente = function (nombre, apellido, email) {
 const recuperarClientes=()=>{
     // busco en el storage los datos
     const clientesObtenidos = JSON.parse(localStorage.getItem("clientes"))
-    /* console.log(" clientes obtenidos", clientesObtenidos) */
+    
     // Si no los encuentro retorno un array vacio
     if(clientesObtenidos === null){
         return []
@@ -626,27 +648,23 @@ const radioAccesorio= document.querySelector("#accesorio")
 radioPrint.addEventListener("change", (e)=>{
   let arrayNuevo = buscarxClase("print",productos)
   arrayFiltrado=arrayNuevo
-  console.log(arrayNuevo)
   dibujarCatalogo(arrayFiltrado)
   })
 
 radioSticker.addEventListener("change", (e)=>{
   let arrayNuevo = buscarxClase("Sticker",productos)
-  console.log(arrayNuevo)
   arrayFiltrado=arrayNuevo
   dibujarCatalogo(arrayFiltrado)
   })
 
 radioTodos.addEventListener("change", (e)=>{
   let arrayNuevo = productos
-  console.log(arrayNuevo)
   arrayFiltrado=arrayNuevo
   dibujarCatalogo(arrayFiltrado)
   })
 
 radioAccesorio.addEventListener("change", (e)=>{
   let arrayNuevo = buscarxClase("Accesorio",productos)
-  console.log(arrayNuevo)
   arrayFiltrado=arrayNuevo
   dibujarCatalogo(arrayFiltrado)
   })
@@ -668,6 +686,7 @@ botonAgregarProductos.addEventListener("click", (e)=>{
 //Funcion para cargar el dom de compra finalizada
 const domFinalCompra = ()=>{
 finalCompra = localStorage.getItem("finCompra")
+let fechaAhora = JSON.parse(localStorage.getItem("fechaCompra"))
 
 //cambios en la pagina luego de que terminas de comprar
 if(finalCompra=="true"){
@@ -685,7 +704,7 @@ if(finalCompra=="true"){
   catalogo.innerHTML = ''
   addProductos.innerHTML = ''
   let cliente = clienteActivo[0]
-  h2.innerText = `Gracias por tu compra ${cliente.nombre.toUpperCase()} \n La factura ha sido enviada a ${cliente.email}`
+  h2.innerText = `Gracias por tu compra ${cliente.nombre.toUpperCase()}\n Compra realizada el ${fechaAhora[0]} a las ${fechaAhora[1]} \n La factura ha sido enviada a ${cliente.email}`
   tituloCarrito.innerText='Resumen Compra'
   finCompra.classList.toggle("oculto")
   botonLogOut.classList.toggle("oculto")
@@ -694,13 +713,15 @@ if(finalCompra=="true"){
   nuevaCompra.classList.toggle("oculto")
 }
 }
+ 
+
+
 
 /* EMPIEZA EL PROCESO */
-productosPreexistentes()
+productosPreexistentes()// Se hace el fetch con json y se dibuja el catalogo
 clientes = recuperarClientes()//RECUPERAMOS DATOS DE CLIENTES
 carrito = recuperarCarrito()//RECUPERAMOS DATOS DE carrito
 clienteActivo=recuperarClienteActivo()
-console.log(clienteActivo);
 
 comprobarPrimerUso()
 calcularTotalBolsa()//calculamos el monto inicial, que puede ser diferente de cero si se estaba comprando antes.
@@ -713,14 +734,15 @@ if (sesionActiva===false){
   cargarDomUsuario(clienteActivo)
 }
 
-//Diagramamos el catalago de productos
-dibujarCatalogo(productos)
 
 dibujarBolsa()//Muestra lo que hay en bolsa
 cargarCarrito()
 domFinalCompra()
 
 /* FIN PROCESO */
+
+
+
 
 
 
@@ -766,7 +788,8 @@ selectorFiltro.addEventListener("change", event => {
 //Evento del boton que finaliza la compra y muestra el carrito y el total 
 const botonFinalCompra = document.querySelector("#botonFinCompra")
 botonFinalCompra.addEventListener("click", event => {
-
+let fechaAhora = obtenerDate()
+localStorage.setItem("fechaCompra", JSON.stringify(fechaAhora))
 let compraFinalizada = true
 localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
 domFinalCompra()
