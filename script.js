@@ -655,7 +655,7 @@ const dibujarBolsa = () =>{
     const vaciarCarrito = document.querySelector("#chauCarrito")
     const avisoCliente = document.querySelector(".avisoCliente")
     if(clienteActivo.length===0){
-      avisoCliente.innerText = "Por favor registrarse para poder comprar o modificar bolsa"
+      avisoCliente.innerText = "Por favor registrarse para poder finalizar la compra"
     }else{
       avisoCliente.innerText = ''
       botonFinCompra.classList.remove("oculto")
