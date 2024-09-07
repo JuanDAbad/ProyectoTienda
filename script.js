@@ -773,7 +773,7 @@ if(finalCompra=="true"){
  
 
 
-
+//////////////////////////////////
 /* EMPIEZA EL PROCESO */
 productosPreexistentes()// Se hace el fetch con json y se dibuja el catalogo
 clientes = recuperarClientes()//RECUPERAMOS DATOS DE CLIENTES
@@ -797,7 +797,7 @@ cargarCarrito()
 domFinalCompra()
 
 /* FIN PROCESO */
-
+////////////////////////////////////////
 
 
 
