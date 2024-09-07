@@ -1,3 +1,5 @@
+//todas las imagenes utilizadas son extraidas de internet, no son de mi autoria y son solo colocadas como referencia
+
 let carrito = [];
 let clientes = [];
 const productos = [];
@@ -14,6 +16,7 @@ let sesionActiva = false;
 let clienteActivo = []
 const DateTime = luxon.DateTime;
 const now = DateTime.now();
+let botonesEliminar = []
 
 const agregarCero = (number) =>{
     if(number<10){
@@ -50,6 +53,7 @@ let comprobarPrimerUso = () =>{
   }
 }
 
+
 //Preset de carga para nuevo usuario
 function cargarDOMInicial(){
   const mensajeAdvertencia = document.createElement("h6")
@@ -78,7 +82,6 @@ function cargarDOMInicial(){
 <input type="submit" value="Enviar" id="enviar">`
 intro.appendChild(mensajeAdvertencia)
   }
-
 
 
 //Preset de carga para usuario anteriormente registrado o con sesión iniciada en ese dispositivo (verifica localstorage por el array clientes)
@@ -125,14 +128,17 @@ class BoxesLess {
   }
 } }
 
+
 //Setteo de Clases
 class Producto {
-  constructor(nombre, clase, precio, size, codigo) {
+  constructor(nombre, clase, precio, size, codigo, src, alt) {
     this.nombre = nombre;
     this.clase = clase;
     this.precio = Number.parseFloat(precio).toFixed(2);
     this.size = size;
     this.codigo = codigo;
+    this.src = src;
+    this.alt = alt;
   }
 }
 
@@ -156,7 +162,7 @@ class ElementoCarrito {
 
 //Funcion para agregar producto al catalogo
 const agregarProducto = function (obj) {
-  const producto = new Producto(obj.nombre, obj.clase, obj.precio, obj.size, obj.codigo);
+  const producto = new Producto(obj.nombre, obj.clase, obj.precio, obj.size, obj.codigo, obj.src, obj.alt);
   productos.push(producto);
 };
 
@@ -398,7 +404,8 @@ const buscarxClase = (clase, catalogo) => {
   }
 };
 
-//funcion para agregar productos al carrito
+//funcion para agregar productos al carrito, la cambie para que sumara productos con el mismo codigo.
+//Te permite si deseas aumentar la cantidad de un producto
 const agregarCarrito = (codigo, cantidad, catalogo) => {
   const productoEncontrado = catalogo.find((producto) => {
     return producto.codigo === codigo;
@@ -406,16 +413,26 @@ const agregarCarrito = (codigo, cantidad, catalogo) => {
 
   if(cantidad!==''){ 
   if (productoEncontrado) {
-    const eleCarrito = new ElementoCarrito(productoEncontrado.codigo,productoEncontrado.nombre,productoEncontrado.precio,cantidad);
-    carrito.push(eleCarrito);
-    localStorage.setItem("carrito", JSON.stringify(carrito))
-  } else {
+    const carritoEncontrado = carrito.find((producto) => {
+      return producto.codigo === codigo;
+    });
+  
+    if(carritoEncontrado){
+      let nuevaCantidad = parseInt(carritoEncontrado.cantidad) + parseFloat(cantidad)
+      let index = carrito.indexOf(carritoEncontrado)
+      carrito[index].cantidad = nuevaCantidad
+    }else{
+      const eleCarrito = new ElementoCarrito(productoEncontrado.codigo,productoEncontrado.nombre,productoEncontrado.precio,cantidad);
+      carrito.push(eleCarrito);
+      localStorage.setItem("carrito", JSON.stringify(carrito))
+    }
     
   }}
 };
 
+
 //funcion para quitar un elemento del carrito
-const quitarElemento = (codigo, catalogo) => {
+const quitarEleXCodigo = (codigo, catalogo) => {
   const productoEncontrado = catalogo.find((producto) => {
     return producto.codigo === codigo;
   });
@@ -424,8 +441,7 @@ const quitarElemento = (codigo, catalogo) => {
     let posicion = catalogo.indexOf(productoEncontrado);
 
     catalogo.splice(posicion, 1);
-    localStorage.setItem("carrito", JSON.stringify(catalogo))
-    
+    localStorage.setItem("carrito", JSON.stringify(catalogo))  
   }
 };
 
@@ -502,6 +518,9 @@ const dibujarCatalogo=(array)=>{
     if(exacto===0){
       for(let j = 0;j<4;j++){
         const box = document.querySelector(`div.row${f} > div.box${j+1}`)
+        box.innerHTML+=`<div >
+        <img class="imgCatalogo" src="${array[f*4+j].src}" alt="${array[f*4+j].alt}">
+        </div>`
         box.innerHTML+=`<div class="labelProducto">${array[f*4+j].nombre}</div>`
         box.innerHTML+=`<div class="labelProducto">${array[f*4+j].precio} S/.</div>`
         box.innerHTML+=`<div class="contador">
@@ -513,7 +532,6 @@ const dibujarCatalogo=(array)=>{
         const mas = document.querySelector(`div.row${f} > div.box${j+1} > .contador > #mas`)
         const boxmas = new BoxesMore(mas,f*4+j)
         const boxmenos = new BoxesLess(menos,f*4+j)
-
         arrayAumentar[f*4+j] = mas
         arrayDisminuir[f*4+j] = menos
 
@@ -522,6 +540,9 @@ const dibujarCatalogo=(array)=>{
       if(f*4 + resto < numeroElementos){
         for(let j = 0;j<4;j++){
           const box = document.querySelector(`div.row${f} > div.box${j+1}`)
+          box.innerHTML+=`<div >
+        <img class="imgCatalogo" src="${array[f*4+j].src}" alt="${array[f*4+j].alt}">
+        </div>`
           box.innerHTML+=`<div class="labelProducto">${array[f*4+j].nombre}</div>`
           box.innerHTML+=`<div class="labelProducto">${array[f*4+j].precio} S/.</div>`
           box.innerHTML+=`<div class="contador">
@@ -539,6 +560,9 @@ const dibujarCatalogo=(array)=>{
       }else{ 
       for(let j = 0;j<resto;j++){    
         const box = document.querySelector(`div.row${f} > div.box${j+1}`)
+        box.innerHTML+=`<div >
+        <img class="imgCatalogo" src="${array[f*4+j].src}" alt="${array[f*4+j].alt}">
+        </div>`
         box.innerHTML+=`<div class="labelProducto">${array[f*4+j].nombre}</div>`
         box.innerHTML+=`<div class="labelProducto">${array[f*4+j].precio} S/.</div>`
         box.innerHTML+=`<div class="contador">
@@ -564,9 +588,10 @@ const dibujarCatalogo=(array)=>{
 const dibujarBolsa = () =>{
   const seccionBolsa = document.querySelector(".bolsa")
   seccionBolsa.innerHTML=''
-
+  let finCompra = localStorage.getItem("finCompra")
   if(carrito.length>0){
-    seccionBolsa.innerHTML+=`<div class="titulosCarrito"> <h3 class="tituloCarrito">Carrito</h3>
+    if (finCompra === "true" ){
+      seccionBolsa.innerHTML+=`<div class="titulosCarrito"> <h3 class="tituloCarrito">Carrito</h3>
      <div class="subtitulosCarrito">
       <h3 class="subtituloBolsa">Nombre</h3>
       <h3 class="subtituloBolsa">Precio Unitario (S/.)</h3>
@@ -575,19 +600,51 @@ const dibujarBolsa = () =>{
      </div>
     </div>
     `
+    }else{
+      seccionBolsa.innerHTML+=`<div class="titulosCarrito"> <h3 class="tituloCarrito">Carrito</h3>
+     <div class="subtitulosCarrito">
+      <h3 class="subtituloBolsa">Nombre</h3>
+      <h3 class="subtituloBolsa">Precio Unitario (S/.)</h3>
+      <h3 class="subtituloBolsa">Cantidad</h3>
+      <h3 class="subtituloBolsa">Subtotal (S/.)</h3>
+      <h3 class="subtituloBolsa">Eliminar Producto</h3>
+     </div>
+    </div>
+    `
+    }
+    
   }
-
-  let i = 0
-  carrito.forEach(item => {
-    let precioElementos = item.precio*item.cantidad
-    seccionBolsa.innerHTML+=` <div class="enBolsa" id="enBolsa${i}">
-        <h3 class="elemento-bolsa">${item.nombre}</h3>
-        <h3 class="elemento-bolsa">${item.precio}</h3>
-        <h3 class="elemento-bolsa">${item.cantidad}</h3>
-        <h3 class="elemento-bolsa">${precioElementos}</h3>
-      </div>`
+ 
+  if (finCompra === "true" ){
+    let i = 0
+    carrito.forEach(item => {
+  
+      let precioElementos = item.precio*item.cantidad
+      seccionBolsa.innerHTML+=` <div class="enBolsa" id="enBolsa${i}">
+          <h3 class="elemento-bolsa">${item.nombre}</h3>
+          <h3 class="elemento-bolsa">${item.precio}</h3>
+          <h3 class="elemento-bolsa">${item.cantidad}</h3>
+          <h3 class="elemento-bolsa">${precioElementos}</h3>
+        </div>`
       i++
-  });
+    }
+  );
+  }else{
+    let i = 0
+    carrito.forEach(item => {
+  
+      let precioElementos = item.precio*item.cantidad
+      seccionBolsa.innerHTML+=` <div class="enBolsa" id="enBolsa${i}">
+          <h3 class="elemento-bolsa">${item.nombre}</h3>
+          <h3 class="elemento-bolsa">${item.precio}</h3>
+          <h3 class="elemento-bolsa">${item.cantidad}</h3>
+          <h3 class="elemento-bolsa">${precioElementos}</h3>
+          <input type="submit" value="X" id="quitarEleCarrito${i}">
+        </div>`
+      i++
+    }
+  );
+  }
 
   const total=document.querySelector(".totalBolsa")
   //Esta parte ve si es que hay algun elemento en la bolsa revisando el total consumido
@@ -686,7 +743,7 @@ botonAgregarProductos.addEventListener("click", (e)=>{
 //Funcion para cargar el dom de compra finalizada
 const domFinalCompra = ()=>{
 finalCompra = localStorage.getItem("finCompra")
-let fechaAhora = JSON.parse(localStorage.getItem("fechaCompra"))
+let fechaActual = obtenerDate()
 
 //cambios en la pagina luego de que terminas de comprar
 if(finalCompra=="true"){
@@ -704,7 +761,7 @@ if(finalCompra=="true"){
   catalogo.innerHTML = ''
   addProductos.innerHTML = ''
   let cliente = clienteActivo[0]
-  h2.innerText = `Gracias por tu compra ${cliente.nombre.toUpperCase()}\n Compra realizada el ${fechaAhora[0]} a las ${fechaAhora[1]} \n La factura ha sido enviada a ${cliente.email}`
+  h2.innerText = `Gracias por tu compra ${cliente.nombre.toUpperCase()}\n Compra realizada el ${fechaActual[0]} a las ${fechaActual[1]} hrs.\n La factura ha sido enviada a ${cliente.email}`
   tituloCarrito.innerText='Resumen Compra'
   finCompra.classList.toggle("oculto")
   botonLogOut.classList.toggle("oculto")
@@ -788,8 +845,6 @@ selectorFiltro.addEventListener("change", event => {
 //Evento del boton que finaliza la compra y muestra el carrito y el total 
 const botonFinalCompra = document.querySelector("#botonFinCompra")
 botonFinalCompra.addEventListener("click", event => {
-let fechaAhora = obtenerDate()
-localStorage.setItem("fechaCompra", JSON.stringify(fechaAhora))
 let compraFinalizada = true
 localStorage.setItem("finCompra", JSON.stringify(compraFinalizada))
 domFinalCompra()
@@ -843,3 +898,44 @@ logOut.addEventListener("click", event => {
   dibujarBolsa()
  
   });
+
+
+//Boton y evento para buscar escribiendo directamente
+
+const botonBuscar = document.querySelector("#botonBuscar")
+botonBuscar.addEventListener("click", event =>{
+  let infoBuscar = document.querySelector("#busqueda")
+  let busqueda = infoBuscar.value
+  let arrayEncontrado = buscarxNombre(busqueda,productos)
+  arrayFiltrado=arrayEncontrado
+  dibujarCatalogo(arrayFiltrado)
+  
+})
+
+document.addEventListener("click",(event)=> {
+  const clickedElement = event.target;
+
+  for (let i = 0;i<carrito.length;i++){
+    if(clickedElement.matches(`#quitarEleCarrito${i}`)){
+      carrito.splice(i, 1);
+      localStorage.setItem("carrito", JSON.stringify(carrito))  
+      calcularTotalBolsa()
+      dibujarBolsa()
+    }
+  }
+  
+})
+
+let home = document.querySelector(".home")
+
+home.addEventListener("mouseover",(event)=> {
+  home.classList.toggle("mouseEncima")
+})
+
+home.addEventListener("mouseout",(event)=> {
+  home.classList.toggle("mouseEncima")
+})
+
+home.addEventListener("click",(event)=>{
+  location.reload()
+})

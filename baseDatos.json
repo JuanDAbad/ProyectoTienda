@@ -4,7 +4,9 @@
         "clase":"Print",
         "precio":15.0,
         "size":"14.8x21",
-        "codigo":1
+        "codigo":1,
+        "src":"./imgs/printa5.jpg",
+        "alt":"Print tamaño A5"
         
     },
     {
@@ -12,48 +14,62 @@
         "clase":"Print",
         "precio":30.0,
         "size":"21x29.7",
-        "codigo":2
+        "codigo":2,
+        "src":"./imgs/printa4.png",
+        "alt":"Print tamaño A4"
     },
     {
         "nombre":"Print A3",
         "clase":"Print",
         "precio":50.0,
         "size":"29.7x42",
-        "codigo":3
+        "codigo":3,
+        "src":"./imgs/printa3.jpeg",
+        "alt":"Print tamaño A3"
     },
     {
         "nombre":"Pack Sticker x5",
         "clase":"Pack Stickers",
         "precio":5.0,
         "size":"14.8x21",
-        "codigo":4
+        "codigo":4,
+        "src":"./imgs/img1.jpg",
+        "alt":"Paquete de 5 stickers"
     },
     {
         "nombre":"Pack Sticker x10",
         "clase":"Pack Stickers",
         "precio":10.0,
         "size":"14.8x21",
-        "codigo":5
+        "codigo":5,
+        "src":"./imgs/img2.png",
+        "alt":"Paquete de 10 stickers"
     },
     {
         "nombre":"Taza",
         "clase":"Accesorio",
         "precio":15.0,
         "size":"14.8x21",
-        "codigo":6
+        "codigo":6,
+        "src":"./imgs/taza.jpg",
+        "alt":"Taza con inscripción marca Perú"
     },
     {
         "nombre":"Tote Bag",
         "clase":"Accesorio",
         "precio":50.0,
         "size":"14.8x21",
-        "codigo":7
+        "codigo":7,
+       "src":"./imgs/toteBag.jpeg",
+        "alt":"Tote Bag bolsa de tela simple"
     },
     {
         "nombre":"Gorra",
         "clase":"Accesorio",
         "precio":30.0,
         "size":"14.8x21",
-        "codigo":8
+        "codigo":8,
+        "src":"./imgs/gorra.jpeg",
+        "alt":"Gorra negra"
     }
 ]

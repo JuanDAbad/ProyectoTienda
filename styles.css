@@ -34,13 +34,26 @@ header {
   }
 
 h1 {
+  display: flex;
+  text-align: center;
+  justify-content: center;
     font-family: "Amatic SC", sans-serif;
     font-weight: 800;
     font-style: normal;
     font-size: 70px;
+    width: 200px;
     color: rgb(19, 30, 90);
     margin: 20px;
   }
+
+.home{
+  background-color: rgb(138, 226, 238);
+  border-radius: 50px;
+}
+
+.mouseEncima{
+  border: 2px solid rgb(238, 94, 58);
+}
 
   .badInput {
     border-color: red;
@@ -185,4 +198,9 @@ font-size: 20px;
 
 .avisoCliente{
   color: red;
+}
+
+.imgCatalogo{
+  width: fit-content;
+  height: 25vh;
 }
